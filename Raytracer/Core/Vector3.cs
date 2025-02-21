@@ -1,7 +1,5 @@
 ﻿namespace Raytracer.Core
 {
-    using System;
-
     public struct Vector3
     {
         public float X, Y, Z;
@@ -49,6 +47,11 @@
         }
 
         public static Vector3 operator *(Vector3 v, float scalar)
+        {
+            return new Vector3(v.X * scalar, v.Y * scalar, v.Z * scalar);
+        }
+
+        public static Vector3 operator *(float scalar, Vector3 v)
         {
             return new Vector3(v.X * scalar, v.Y * scalar, v.Z * scalar);
         }

@@ -22,16 +22,16 @@ namespace Raytracer.Core
             if (discriminant > 0)
             {
                 float distance = (-b - (float)Math.Sqrt(discriminant)) / (2.0f * a);
-				hit = new RayHit {
-					HasHit = true,
-					Position = ray.Origin + ray.Direction.Normalized * distance,
-					Distance = distance,
-					HitObject = this
-				};
+                hit = new RayHit {
+                    HasHit = true,
+                    Position = ray.Origin + ray.Direction * distance,
+                    Distance = distance,
+                    HitObject = this
+                };
                 return true;
             }
 
-			hit = new RayHit { HasHit = false };
+            hit = new RayHit { HasHit = false };
             return false;
         }
     }
