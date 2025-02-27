@@ -16,20 +16,45 @@ namespace Raytracer.Core {
     	}
 
     	public RayHit TraceRay(Ray ray)
-    	{
-			RayHit? closestHit = null;
-
+	    {
+		    RayHit? closestHit = null;
+			RaytracingColor? resultColor = null;
+			
         	foreach (var obj in Objects)
         	{
             	if (obj.Collides(ray, out RayHit hit))
             	{
-					if (!closestHit.HasValue || hit.Distance < closestHit.Value.Distance) {
-						closestHit = hit;
+					if (hit.HasHit) {
+						Console.WriteLine("I have hit something. Color: " + hit.Color.ToString());
+						if (!closestHit.HasValue) {
+							closestHit = hit;
+							resultColor = hit.Color;
+							continue;
+						}
+
+						if (hit.Distance < closestHit.Value.Distance)
+						{
+							closestHit = hit;
+						}
+
+						resultColor += hit.Color;
 					}
             	}
         	}
 
-			return closestHit ?? new RayHit { HasHit = false };
+	        RayHit? result = null;
+	        if (closestHit.HasValue)
+	        {
+		        result = new RayHit()
+		        {
+			        HasHit = true,
+			        Distance = closestHit.Value.Distance,
+			        Position = closestHit.Value.Position,
+			        HitObject = closestHit.Value.HitObject,
+			        Color = resultColor!.Value
+		        };
+	        }
+			return result ?? new RayHit { HasHit = false };
 		}
 	}
 

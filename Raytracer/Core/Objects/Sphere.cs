@@ -13,7 +13,7 @@ namespace Raytracer.Core
 
         public override bool Collides(Ray ray, out RayHit hit)
         {
-            Vector3 oc = ray.Origin - Transform.Position;
+            Vector3 oc = ray.Origin - transfrom.Position;
             float a = Vector3.Dot(ray.Direction, ray.Direction);
             float b = 2.0f * Vector3.Dot(oc, ray.Direction);
             float c = Vector3.Dot(oc, oc) - Radius * Radius;
@@ -26,7 +26,8 @@ namespace Raytracer.Core
                     HasHit = true,
                     Position = ray.Origin + ray.Direction * distance,
                     Distance = distance,
-                    HitObject = this
+                    HitObject = this,
+                    Color = this.material.color
                 };
                 return true;
             }

@@ -2,14 +2,15 @@ using System.Drawing;
 
 namespace Raytracer.Core {
 
-	public abstract class BaseObject {
+	public abstract class BaseObject
+	{
 
-		public Transform Transform { get; }
-		public Material Material { get; set; }
+		public Transform transfrom;
+		public Material material;
 
 		public BaseObject(Vector3 position, Quaternion rotation) {
-			this.Transform = new Transform(position, rotation);
-			this.Material = Raytracer.Core.Material.SingleColor(Color.Cyan);
+			this.transfrom = new Transform(position, rotation);
+			this.material = Raytracer.Core.Material.SingleColor(new RaytracingColor(0, 0, 1));
 		}
 
 		public BaseObject(Vector3 position) : this (position, Quaternion.Identity) { }

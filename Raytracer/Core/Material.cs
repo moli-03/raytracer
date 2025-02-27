@@ -5,13 +5,13 @@ namespace Raytracer.Core {
 
 	public class Material {
 
-		public Color color;
+		public RaytracingColor color;
 
-		private Material(Color color) {
+		private Material(RaytracingColor color) {
 			this.color = color;
 		}
 
-		public static Material SingleColor(Color color) {
+		public static Material SingleColor(RaytracingColor color) {
 			return new Material(color);
 		}
 

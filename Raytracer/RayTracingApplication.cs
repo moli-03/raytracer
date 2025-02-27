@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Timers;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -22,11 +23,21 @@ namespace Raytracer {
 
 		public void Run() {
 
-			Sphere sphere = new Sphere(2);
-			sphere.Transform.MoveTo(0, 0, 30);
-			sphere.Material.color = System.Drawing.Color.Cyan;
+			Sphere blue = new Sphere(2);
+			blue.transfrom.MoveTo(0, 2, 10);
+			blue.material.color = new RaytracingColor(0, 0, 1);
+			
+			Sphere green = new Sphere(2);
+			green.transfrom.MoveTo(1.5f, 0, 10);
+			green.material.color = new RaytracingColor(0, 1, 0);
+			
+			Sphere red = new Sphere(2);
+			red.transfrom.MoveTo(-1.5f, 0, 10);
+			red.material.color = new RaytracingColor(1, 0, 0);
 
-			this.scene.AddObject(sphere);
+			this.scene.AddObject(red);
+			this.scene.AddObject(green);
+			this.scene.AddObject(blue);
 
 			this.RenderFrame();
 		}
@@ -46,11 +57,12 @@ namespace Raytracer {
 
 					if (hit.HasHit) {
                         int index = (y * stride) + (x * 4);
-						System.Drawing.Color color = hit.HitObject.Material.color;
-
-                        pixels[index] = color.B;     // Blue
-                        pixels[index + 1] = color.G; // Green
-                        pixels[index + 2] = color.R; // Red
+                        RaytracingColor color = hit.Color;
+                        var col = color.ToColor();
+                        
+                        pixels[index] = col.B;     // Blue
+                        pixels[index + 1] = col.G; // Green
+                        pixels[index + 2] = col.R; // Red
                         pixels[index + 3] = 255;        // Alpha
 					}
 				}
