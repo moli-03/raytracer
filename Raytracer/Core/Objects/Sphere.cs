@@ -26,8 +26,7 @@ namespace Raytracer.Core
                     HasHit = true,
                     Position = ray.Origin + ray.Direction * distance,
                     Distance = distance,
-                    HitObject = this,
-                    Color = this.material.color
+                    HitObject = this
                 };
                 return true;
             }

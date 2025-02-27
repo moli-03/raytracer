@@ -23,21 +23,53 @@ namespace Raytracer {
 
 		public void Run() {
 
-			Sphere blue = new Sphere(2);
-			blue.transfrom.MoveTo(0, 2, 10);
-			blue.material.color = new RaytracingColor(0, 0, 1);
+			/**
+			Sphere big = new Sphere(4);
+			big.transfrom.MoveTo(0, 0, 8);
+			big.material.color = new RaytracingColor(0, 0, 1);
 			
-			Sphere green = new Sphere(2);
-			green.transfrom.MoveTo(1.5f, 0, 10);
-			green.material.color = new RaytracingColor(0, 1, 0);
+			Sphere small = new Sphere(2);
+			small.transfrom.MoveTo(-1f, 1, 6);
+			small.material.color = new RaytracingColor(0, 0.75f, 0.75f);
 			
-			Sphere red = new Sphere(2);
-			red.transfrom.MoveTo(-1.5f, 0, 10);
-			red.material.color = new RaytracingColor(1, 0, 0);
 
-			this.scene.AddObject(red);
-			this.scene.AddObject(green);
-			this.scene.AddObject(blue);
+			this.scene.AddObject(big);
+			this.scene.AddObject(small);
+			**/
+			
+			List<Sphere> balls = new List<Sphere>();
+			balls.Add(new Sphere(2));
+			balls.Add(new Sphere(2));
+			
+			foreach (var sphere in balls)
+			{
+				sphere.material.color = new RaytracingColor(0, 0.75f, 0.75f);
+			}
+			
+			balls[0].transfrom.MoveTo(-1.5f, -1, 6);
+			balls[1].transfrom.MoveTo(1.5f, -1, 6);
+			
+			foreach (var sphere in balls)
+			{
+				this.scene.AddObject(sphere);
+			}
+			
+			List<Sphere> shaft = new List<Sphere>();
+			shaft.Add(new Sphere(2));
+			shaft.Add(new Sphere(2));
+			shaft.Add(new Sphere(2));
+			shaft.Add(new Sphere(2));
+			shaft.Add(new Sphere(2));
+			shaft.Add(new Sphere(2));
+			shaft.Add(new Sphere(2));
+			shaft.Add(new Sphere(2));
+
+			for (int i = 0; i < shaft.Count; i++)
+			{
+				shaft[i].transfrom.MoveTo(0, i * 0.5f, 6);
+				shaft[i].material.color = new RaytracingColor(0, 1f * i / shaft.Count, 0.75f);
+				this.scene.AddObject(shaft[i]);
+			}
 
 			this.RenderFrame();
 		}
@@ -57,7 +89,7 @@ namespace Raytracer {
 
 					if (hit.HasHit) {
                         int index = (y * stride) + (x * 4);
-                        RaytracingColor color = hit.Color;
+                        RaytracingColor color = hit.HitObject.material.color;
                         var col = color.ToColor();
                         
                         pixels[index] = col.B;     // Blue

@@ -6,7 +6,6 @@ namespace Raytracer.Core {
 		public Vector3? Position;
 		public float Distance;
 		public BaseObject HitObject;
-		public RaytracingColor Color;
 	}
 
 }

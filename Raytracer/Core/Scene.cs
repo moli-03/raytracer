@@ -25,10 +25,8 @@ namespace Raytracer.Core {
             	if (obj.Collides(ray, out RayHit hit))
             	{
 					if (hit.HasHit) {
-						Console.WriteLine("I have hit something. Color: " + hit.Color.ToString());
 						if (!closestHit.HasValue) {
 							closestHit = hit;
-							resultColor = hit.Color;
 							continue;
 						}
 
@@ -36,25 +34,11 @@ namespace Raytracer.Core {
 						{
 							closestHit = hit;
 						}
-
-						resultColor += hit.Color;
 					}
             	}
         	}
 
-	        RayHit? result = null;
-	        if (closestHit.HasValue)
-	        {
-		        result = new RayHit()
-		        {
-			        HasHit = true,
-			        Distance = closestHit.Value.Distance,
-			        Position = closestHit.Value.Position,
-			        HitObject = closestHit.Value.HitObject,
-			        Color = resultColor!.Value
-		        };
-	        }
-			return result ?? new RayHit { HasHit = false };
+			return closestHit ?? new RayHit { HasHit = false };
 		}
 	}
 
