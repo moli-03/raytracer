@@ -9,9 +9,9 @@ public struct RaytracingColor
 
     public RaytracingColor(float r, float g, float b)
     {
-        R = r;
-        G = g;
-        B = b;
+        R = Math.Clamp(r, 0, 1);
+        G = Math.Clamp(g, 0, 1);
+        B = Math.Clamp(b, 0, 1);
     }
     
     
@@ -23,6 +23,26 @@ public struct RaytracingColor
     public static RaytracingColor operator *(RaytracingColor a, RaytracingColor b)
     {
         return new RaytracingColor(a.R * b.R, a.G * b.G, a.B * b.B);
+    }
+    
+    public static RaytracingColor operator +(float a, RaytracingColor b)
+    {
+        return new RaytracingColor(a + b.R, a + b.G, a + b.B);
+    }
+    
+    public static RaytracingColor operator +(RaytracingColor a, float b)
+    {
+        return new RaytracingColor(a.R + b, a.G + b, a.B + b);
+    }
+    
+    public static RaytracingColor operator *(float a, RaytracingColor b)
+    {
+        return new RaytracingColor(a * b.R, a * b.G, a * b.B);
+    }
+    
+    public static RaytracingColor operator *(RaytracingColor a, float b)
+    {
+        return new RaytracingColor(a.R * b, a.G * b, a.B * b);
     }
 
     public Color ToColor()

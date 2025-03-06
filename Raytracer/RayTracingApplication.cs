@@ -1,8 +1,8 @@
-using System.Diagnostics;
-using System.Timers;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using Raytracer.Core;
 
 namespace Raytracer {
@@ -12,6 +12,8 @@ namespace Raytracer {
 		private WriteableBitmap frame;
 		private Image screen;
 		private Scene scene;
+
+		private float diffuseColor = 0.1f;
 
 		public RayTracingApplication(Image screen)
 		{
@@ -36,18 +38,24 @@ namespace Raytracer {
 			this.scene.AddObject(big);
 			this.scene.AddObject(small);
 			**/
+
+			Light light = new Light(new RaytracingColor(1, 1, 1));
+			light.transform.MoveTo(-4, 8, 2);
+			this.scene.AddLight(light);
 			
 			List<Sphere> balls = new List<Sphere>();
 			balls.Add(new Sphere(2));
 			balls.Add(new Sphere(2));
 			
+			var random = new Random();
+			
 			foreach (var sphere in balls)
 			{
-				sphere.material.color = new RaytracingColor(0, 0.75f, 0.75f);
+				sphere.material.color = new RaytracingColor(random.NextSingle(), random.NextSingle(), random.NextSingle());
 			}
 			
-			balls[0].transfrom.MoveTo(-1.5f, -1, 6);
-			balls[1].transfrom.MoveTo(1.5f, -1, 6);
+			balls[0].transform.MoveTo(-1.5f, -3, 6);
+			balls[1].transform.MoveTo(1.5f, -3, 6);
 			
 			foreach (var sphere in balls)
 			{
@@ -61,17 +69,29 @@ namespace Raytracer {
 			shaft.Add(new Sphere(2));
 			shaft.Add(new Sphere(2));
 			shaft.Add(new Sphere(2));
-			shaft.Add(new Sphere(2));
-			shaft.Add(new Sphere(2));
 
 			for (int i = 0; i < shaft.Count; i++)
 			{
-				shaft[i].transfrom.MoveTo(0, i * 0.5f, 6);
-				shaft[i].material.color = new RaytracingColor(0, 1f * i / shaft.Count, 0.75f);
+				shaft[i].transform.MoveTo(0, i * 0.85f - 2, 6);
+				shaft[i].material.color = new RaytracingColor(random.NextSingle(), random.NextSingle(), random.NextSingle());
 				this.scene.AddObject(shaft[i]);
 			}
 
-			this.RenderFrame();
+			// Fancy light animation
+			DispatcherTimer timer = new DispatcherTimer();
+			timer.Interval = TimeSpan.FromMilliseconds(15);
+			float x = 0;
+			timer.Tick += (s, e) =>
+			{
+				x += 0.25f;
+				light.transform.MoveTo((float)Math.Cos(x) * 5f, 4, (float)Math.Sin(x) * 5f);
+				foreach (var obj in this.scene.Objects)
+				{
+					obj.material.color = new RaytracingColor(random.NextSingle(), random.NextSingle(), random.NextSingle());
+				}
+				this.RenderFrame();
+			};
+			timer.Start();
 		}
 
 
@@ -80,7 +100,7 @@ namespace Raytracer {
 			int height = frame.PixelHeight;
 			int stride = width * 4;
             byte[] pixels = new byte[height * stride];
-
+            
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {
 
@@ -89,7 +109,22 @@ namespace Raytracer {
 
 					if (hit.HasHit) {
                         int index = (y * stride) + (x * 4);
-                        RaytracingColor color = hit.HitObject.material.color;
+                        RaytracingColor color = new RaytracingColor(0, 0, 0) + this.diffuseColor;
+                        
+						foreach (var light in this.scene.Lights)
+						{
+							Vector3 toLight = light.transform.Position - hit.Position!.Value;
+							toLight = toLight.Normalized;  // Normalize the light direction
+							
+							float dotProduct = Vector3.Dot(toLight, hit.Normal!.Value);
+							if (dotProduct > 0)  // Ensure light is in front of the surface
+							{
+								color += (hit.HitObject.material?.color ?? new RaytracingColor(1, 1, 1)) 
+										 * light.color 
+										 * dotProduct;
+							}
+						}
+
                         var col = color.ToColor();
                         
                         pixels[index] = col.B;     // Blue

@@ -5,11 +5,11 @@ namespace Raytracer.Core {
 	public abstract class BaseObject
 	{
 
-		public Transform transfrom;
+		public Transform transform;
 		public Material material;
 
 		public BaseObject(Vector3 position, Quaternion rotation) {
-			this.transfrom = new Transform(position, rotation);
+			this.transform = new Transform(position, rotation);
 			this.material = Raytracer.Core.Material.SingleColor(new RaytracingColor(0, 0, 1));
 		}
 
