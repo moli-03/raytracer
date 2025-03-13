@@ -25,73 +25,85 @@ namespace Raytracer {
 
 		public void Run() {
 
-			/**
-			Sphere big = new Sphere(4);
-			big.transfrom.MoveTo(0, 0, 8);
-			big.material.color = new RaytracingColor(0, 0, 1);
+			var origin = new Vector3(0, 0, 7);
+			float length = 8f;
+			float width = 10f;
+			float height = 10f;
 			
-			Sphere small = new Sphere(2);
-			small.transfrom.MoveTo(-1f, 1, 6);
-			small.material.color = new RaytracingColor(0, 0.75f, 0.75f);
-			
-
-			this.scene.AddObject(big);
-			this.scene.AddObject(small);
-			**/
-
 			Light light = new Light(new RaytracingColor(1, 1, 1));
-			light.transform.MoveTo(-4, 8, 2);
+			light.transform.MoveTo(0, 0, length / 2);
 			this.scene.AddLight(light);
-			
-			List<Sphere> balls = new List<Sphere>();
-			balls.Add(new Sphere(2));
-			balls.Add(new Sphere(2));
 			
 			var random = new Random();
 			
-			foreach (var sphere in balls)
+			// Some spheres
+			for (int i = 0; i < 30; i++)
 			{
-				sphere.material.color = new RaytracingColor(random.NextSingle(), random.NextSingle(), random.NextSingle());
-			}
-			
-			balls[0].transform.MoveTo(-1.5f, -3, 6);
-			balls[1].transform.MoveTo(1.5f, -3, 6);
-			
-			foreach (var sphere in balls)
-			{
+				Sphere sphere = new Sphere(1.7f * random.NextSingle());
+				sphere.material.color = new RaytracingColor(0, Math.Min(random.NextSingle(), 0.7f), Math.Min(random.NextSingle(), 0.6f));
+				float x = random.NextSingle() * width - width / 2;
+				float y = random.NextSingle() * height - height / 2;
+				float z = Math.Clamp(random.NextSingle() * length - length / 2, 1f, length);
+				sphere.transform.MoveTo(origin.X + x, origin.Y + y, origin.Z + z);
 				this.scene.AddObject(sphere);
 			}
+
+			Plane testPlane = new Plane(
+				new Vector3(0, -3, 5f), 
+				new Vector3(0, 0.6f, 1), 
+				new Vector3(1, -0.3f, 0),
+				3f,
+				1.5f
+				);
+			testPlane.material.color = new RaytracingColor(0.6f, 0.7f, 0.2f);
+			this.scene.AddObject(testPlane);
+
+			// Back wall (negative Z direction)
+			Level backWall = new Level(
+				new Vector3(origin.X, origin.Y, origin.Z + length),
+				Vector3.UnitY,
+				Vector3.UnitX
+			);
+			backWall.material.color = new RaytracingColor(1, 1, 1);
+			this.scene.AddObject(backWall);
 			
-			List<Sphere> shaft = new List<Sphere>();
-			shaft.Add(new Sphere(2));
-			shaft.Add(new Sphere(2));
-			shaft.Add(new Sphere(2));
-			shaft.Add(new Sphere(2));
-			shaft.Add(new Sphere(2));
-			shaft.Add(new Sphere(2));
+			// Left wall
+			Level leftWall = new Level(
+				new Vector3(origin.X - width / 2, origin.Y, origin.Z),
+				Vector3.UnitY,
+				Vector3.UnitZ
+			);
+			leftWall.material.color = new RaytracingColor(1, 0, 0);
+			this.scene.AddObject(leftWall);
 
-			for (int i = 0; i < shaft.Count; i++)
-			{
-				shaft[i].transform.MoveTo(0, i * 0.85f - 2, 6);
-				shaft[i].material.color = new RaytracingColor(random.NextSingle(), random.NextSingle(), random.NextSingle());
-				this.scene.AddObject(shaft[i]);
-			}
-
-			// Fancy light animation
-			DispatcherTimer timer = new DispatcherTimer();
-			timer.Interval = TimeSpan.FromMilliseconds(15);
-			float x = 0;
-			timer.Tick += (s, e) =>
-			{
-				x += 0.25f;
-				light.transform.MoveTo((float)Math.Cos(x) * 5f, 4, (float)Math.Sin(x) * 5f);
-				foreach (var obj in this.scene.Objects)
-				{
-					obj.material.color = new RaytracingColor(random.NextSingle(), random.NextSingle(), random.NextSingle());
-				}
-				this.RenderFrame();
-			};
-			timer.Start();
+			// Right wall
+			Level rightWall = new Level(
+				new Vector3(origin.X + width / 2, origin.Y, origin.Z),
+				Vector3.UnitZ,
+				Vector3.UnitY
+			);
+			rightWall.material.color = new RaytracingColor(0, 0, 1);
+			this.scene.AddObject(rightWall);
+			
+			// Ceiling
+			Level ceiling = new Level(
+				new Vector3(origin.X - width / 2, origin.Y + height / 2, origin.Z),
+				Vector3.UnitX,
+				Vector3.UnitZ
+			);
+			ceiling.material.color = new RaytracingColor(0, 1, 0);
+			this.scene.AddObject(ceiling);
+			
+			// Floor
+			Level floor = new Level(
+				new Vector3(origin.X - width / 2, origin.Y - height / 2, origin.Z),
+				Vector3.UnitZ,
+				Vector3.UnitX
+			);
+			floor.material.color = new RaytracingColor(0.5f, 0.5f, 0.5f);
+			this.scene.AddObject(floor);
+							
+			this.RenderFrame();
 		}
 
 

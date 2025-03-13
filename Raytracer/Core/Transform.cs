@@ -17,6 +17,11 @@ namespace Raytracer.Core {
 		public void MoveTo(float x, float y, float z) {
 			this.Position = new Vector3(x, y, z);
 		}
+
+		public void MoveTo(Vector3 position)
+		{
+			this.Position = position;
+		}
 	}
 
 }

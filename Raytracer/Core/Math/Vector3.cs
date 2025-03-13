@@ -2,6 +2,13 @@
 {
     public struct Vector3
     {
+        
+        public static readonly Vector3 Zero = new Vector3(0, 0, 0);
+        public static readonly Vector3 UnitX = new Vector3(1, 0, 0);
+        public static readonly Vector3 UnitY = new Vector3(0, 1, 0);
+        public static readonly Vector3 UnitZ = new Vector3(0, 0, 1);
+        
+        
         public float X, Y, Z;
 
         public Vector3(float x, float y, float z)
@@ -10,8 +17,6 @@
             this.Y = y;
             this.Z = z;
         }
-
-        public static Vector3 Zero => new Vector3(0f, 0f, 0f);
 
         public float Magnitude
         {

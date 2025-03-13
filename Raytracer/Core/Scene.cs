@@ -2,7 +2,7 @@
 namespace Raytracer.Core {
 	public class Scene
 	{
-		public Camera camera = new Camera(Vector3.Zero, new Vector3(0, 0, 1), new Vector3(0, 1, 0), 100f);
+		public Camera camera = new Camera(Vector3.Zero, new Vector3(0, 0, 1), new Vector3(0, 1, 0), 75f);
     	public List<BaseObject> Objects { get; } = new List<BaseObject>();
 	    public List<Light> Lights { get; } = new List<Light>();
 
