@@ -1,6 +1,8 @@
 namespace Raytracer.Core {
 
 	public struct RayHit {
+		
+		public static readonly RayHit NoHit = new RayHit() { HasHit = false};
 
 		public bool HasHit;
 		public Vector3? Position;

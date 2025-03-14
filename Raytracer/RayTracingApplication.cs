@@ -31,32 +31,36 @@ namespace Raytracer {
 			float height = 10f;
 			
 			Light light = new Light(new RaytracingColor(1, 1, 1));
-			light.transform.MoveTo(0, 0, length / 2);
+			light.transform.MoveTo(0, 0, 0);
 			this.scene.AddLight(light);
 			
 			var random = new Random();
-			
-			// Some spheres
-			for (int i = 0; i < 30; i++)
-			{
-				Sphere sphere = new Sphere(1.7f * random.NextSingle());
-				sphere.material.color = new RaytracingColor(0, Math.Min(random.NextSingle(), 0.7f), Math.Min(random.NextSingle(), 0.6f));
-				float x = random.NextSingle() * width - width / 2;
-				float y = random.NextSingle() * height - height / 2;
-				float z = Math.Clamp(random.NextSingle() * length - length / 2, 1f, length);
-				sphere.transform.MoveTo(origin.X + x, origin.Y + y, origin.Z + z);
-				this.scene.AddObject(sphere);
-			}
 
-			Plane testPlane = new Plane(
-				new Vector3(0, -3, 5f), 
-				new Vector3(0, 0.6f, 1), 
-				new Vector3(1, -0.3f, 0),
-				3f,
-				1.5f
-				);
-			testPlane.material.color = new RaytracingColor(0.6f, 0.7f, 0.2f);
-			this.scene.AddObject(testPlane);
+			Triangle triangle = new Triangle(
+				new Vector3(-1, -1, 0),
+				new Vector3(0, 1, 0),
+				new Vector3(1, -1, 0)
+			);
+			triangle.transform.MoveTo(-1, -1, 4);
+			triangle.transform.Rotation = Quaternion.FromAxisAngle(Vector3.UnitX, (float)-Math.PI / 4);
+			triangle.material.color = new RaytracingColor(0, 0.75f, 0.75f);
+			this.scene.AddObject(triangle);
+
+			Plane plane = new Plane(3, 4);
+			plane.transform.MoveTo(0, -2, 3);
+			plane.material.color = new RaytracingColor(0, 0.35f, 0.75f);
+			// this.scene.AddObject(plane);
+
+			Cube cube = new Cube(2);
+			cube.transform.MoveTo(1, -0.75f, 5);
+			cube.transform.Rotation = Quaternion.FromAxisAngle(new Vector3(1, 1, 0), -(float)Math.PI / 8);
+			cube.material.color = new RaytracingColor(0, 0.75f, 0.35f);
+			this.scene.AddObject(cube);
+
+			var now = DateTime.Now;
+			this.RenderFrame();
+			Console.WriteLine("Render duration: " + (DateTime.Now - now).TotalMilliseconds + "ms");
+			return;
 
 			// Back wall (negative Z direction)
 			Level backWall = new Level(
