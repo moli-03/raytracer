@@ -27,7 +27,7 @@ public class Plane : BaseObject
 
         foreach (var triangle in triangles)
         {
-            triangle.transform.Parent = transform;
+            triangle.transform.parent = transform;
         }
     }
 

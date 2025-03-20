@@ -6,16 +6,37 @@ public class Triangle : BaseObject
     private Vector3 p2;
     private Vector3 p3;
 
-    private Vector3 worldV => TransformPoint(p2) - TransformPoint(p1);
-    private Vector3 worldW => TransformPoint(p3) - TransformPoint(p1);
+    private Vector3 worldV;
+    private Vector3 worldW;
 
-    public Vector3 Normal => Vector3.Cross(worldV, worldW).Normalized;
+    public Vector3 Normal { get; private set; }
 
     public Triangle(Vector3 p1, Vector3 p2, Vector3 p3)
     {
         this.p1 = p1;
         this.p2 = p2;
         this.p3 = p3;
+        
+        this.Recalculate();
+        this.transform.PositionChanged += Recalculate;
+        this.transform.RotationChanged += Recalculate;
+    }
+
+    private void Recalculate()
+    {
+        this.CalculateVandW();
+        this.CalculateNormal();
+    }
+
+    private void CalculateVandW()
+    {
+        worldV = TransformPoint(p2) - TransformPoint(p1);
+        worldW = TransformPoint(p3) - TransformPoint(p1);
+    }
+
+    private void CalculateNormal()
+    {
+        Normal =Vector3.Cross(worldV, worldW).Normalized;
     }
 
     public override bool Collides(Ray ray, out RayHit hit)

@@ -14,7 +14,7 @@ namespace Raytracer.Core
 
         public override bool Collides(Ray ray, out RayHit hit)
         {
-            Vector3 oc = ray.Origin - this.transform.Position;
+            Vector3 oc = ray.Origin - this.transform.position;
             float a = Vector3.Dot(ray.Direction, ray.Direction);
             float b = 2.0f * Vector3.Dot(oc, ray.Direction);
             float c = Vector3.Dot(oc, oc) - Radius * Radius;
@@ -41,7 +41,7 @@ namespace Raytracer.Core
 
             // Correct normal calculation
             Vector3 hitPosition = ray.Origin + ray.Direction * distance;
-            Vector3 normal = (hitPosition - transform.Position).Normalized;
+            Vector3 normal = (hitPosition - transform.position).Normalized;
 
             hit = new RayHit
             {

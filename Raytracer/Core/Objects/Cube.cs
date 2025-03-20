@@ -4,56 +4,117 @@ public class Cube : BaseObject
 {
     public float SideLength { get; }
     
-    private List<Plane> planes = new List<Plane>();
+    private List<Triangle> triangles = new List<Triangle>();
 
     public Cube(float sideLength)
     {
         SideLength = sideLength;
         
-        var top = new Plane(sideLength, sideLength);
-        top.transform.MoveTo(0, sideLength / 2, 0);
-        this.planes.Add(top);
+        var top1 = new Triangle(
+            new Vector3(-sideLength / 2, sideLength / 2, -sideLength / 2),
+            new Vector3(-sideLength / 2, sideLength / 2, sideLength / 2),
+            new Vector3(sideLength / 2, sideLength / 2, -sideLength / 2)
+            );
+        top1.transform.parent = transform;
+        this.triangles.Add(top1);
         
-        var bottom = new Plane(sideLength, sideLength);
-        bottom.transform.MoveTo(0, -sideLength / 2, 0);
-        bottom.transform.Rotation = Quaternion.FromAxisAngle(Vector3.UnitX, (float)Math.PI);
-        this.planes.Add(bottom);
+        var top2 = new Triangle(
+            new Vector3(-sideLength / 2, sideLength / 2, sideLength / 2),
+            new Vector3(sideLength / 2, sideLength / 2, sideLength / 2),
+            new Vector3(sideLength / 2, sideLength / 2, -sideLength / 2)
+            );
+        top2.transform.parent = transform;
+        this.triangles.Add(top2);
         
-        var left = new Plane(sideLength, sideLength);
-        left.transform.MoveTo(-sideLength / 2, 0, 0);
-        left.transform.Rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, (float)Math.PI / 2);
-        this.planes.Add(left);
+        var right1 = new Triangle(
+            new Vector3(sideLength / 2, sideLength / 2, -sideLength / 2),
+            new Vector3(sideLength / 2, sideLength / 2, sideLength / 2),
+            new Vector3(sideLength / 2, -sideLength / 2, -sideLength / 2)
+            );
+        right1.transform.parent = transform;
+        this.triangles.Add(right1);
         
-        var right = new Plane(sideLength, sideLength);
-        right.transform.MoveTo(sideLength / 2, 0, 0);
-        right.transform.Rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, -(float)Math.PI / 2);
-        this.planes.Add(right);
-        
-        var back = new Plane(sideLength, sideLength);
-        back.transform.MoveTo(0, 0, sideLength / 2);
-        back.transform.Rotation = Quaternion.FromAxisAngle(Vector3.UnitX, (float)Math.PI / 2);
-        this.planes.Add(back);
-        
-        var front = new Plane(sideLength, sideLength);
-        front.transform.MoveTo(0, 0, -sideLength / 2);
-        front.transform.Rotation = Quaternion.FromAxisAngle(Vector3.UnitX, -(float)Math.PI / 2);
-        this.planes.Add(front);
+        var right2 = new Triangle(
+            new Vector3(sideLength / 2, -sideLength / 2, -sideLength / 2),
+            new Vector3(sideLength / 2, sideLength / 2, sideLength / 2),
+            new Vector3(sideLength / 2, -sideLength / 2, sideLength / 2)
+            );
+        right2.transform.parent = transform;
+        this.triangles.Add(right2);
         
         
-
-        foreach (var plane in planes)
-        {
-            plane.transform.Parent = transform;
-        }
+        var back1 = new Triangle(
+            new Vector3(sideLength / 2, sideLength / 2, sideLength / 2),
+            new Vector3(-sideLength / 2, sideLength / 2, sideLength / 2),
+            new Vector3(sideLength / 2, -sideLength / 2, sideLength / 2)
+            );
+        back1.transform.parent = transform;
+        this.triangles.Add(back1);
+        
+        var back2 = new Triangle(
+            new Vector3(-sideLength / 2, sideLength / 2, sideLength / 2),
+            new Vector3(-sideLength / 2, -sideLength / 2, sideLength / 2),
+            new Vector3(sideLength / 2, -sideLength / 2, sideLength / 2)
+            );
+        back2.transform.parent = transform;
+        this.triangles.Add(back2);
+        
+        var bottom1 = new Triangle(
+            new Vector3(sideLength / 2, -sideLength / 2, -sideLength / 2),
+            new Vector3(sideLength / 2, -sideLength / 2, sideLength / 2),
+            new Vector3(-sideLength / 2, -sideLength / 2, sideLength / 2)
+            );
+        bottom1.transform.parent = transform;
+        this.triangles.Add(bottom1);
+        
+        var bottom2 = new Triangle(
+            new Vector3(sideLength / 2, -sideLength / 2, -sideLength / 2),
+            new Vector3(-sideLength / 2, -sideLength / 2, sideLength / 2),
+            new Vector3(-sideLength / 2, -sideLength / 2, -sideLength / 2)
+            );
+        bottom2.transform.parent = transform;
+        this.triangles.Add(bottom2);
+        
+        var left1 = new Triangle(
+            new Vector3(-sideLength / 2, -sideLength / 2, -sideLength / 2),
+            new Vector3(-sideLength / 2, -sideLength / 2, sideLength / 2),
+            new Vector3(-sideLength / 2, sideLength / 2, -sideLength / 2)
+            );
+        left1.transform.parent = transform;
+        this.triangles.Add(left1);
+        
+        var left2 = new Triangle(
+            new Vector3(-sideLength / 2, sideLength / 2, -sideLength / 2),
+            new Vector3(-sideLength / 2, -sideLength / 2, sideLength / 2),
+            new Vector3(-sideLength / 2, sideLength / 2, sideLength / 2)
+            );
+        left2.transform.parent = transform;
+        this.triangles.Add(left2);
+        
+        var front1 = new Triangle(
+            new Vector3(-sideLength / 2, -sideLength / 2, -sideLength / 2),
+            new Vector3(-sideLength / 2, sideLength / 2, -sideLength / 2),
+            new Vector3(sideLength / 2, -sideLength / 2, -sideLength / 2)
+            );
+        front1.transform.parent = transform;
+        this.triangles.Add(front1);
+        
+        var front2 = new Triangle(
+            new Vector3(-sideLength / 2, sideLength / 2, -sideLength / 2),
+            new Vector3(sideLength / 2, sideLength / 2, -sideLength / 2),
+            new Vector3(sideLength / 2, -sideLength / 2, -sideLength / 2)
+            );
+        front2.transform.parent = transform;
+        this.triangles.Add(front2);
     }
 
     public override bool Collides(Ray ray, out RayHit hit)
     {
         
         RayHit? closestHit = null;
-        foreach (var plane in planes)
+        foreach (var triangle in triangles)
         {
-            if (!plane.Collides(ray, out RayHit planeHit))
+            if (!triangle.Collides(ray, out RayHit planeHit))
             {
                 continue;
             }

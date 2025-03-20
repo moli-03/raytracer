@@ -21,7 +21,7 @@ public class Level : BaseObject
 
     public override bool Collides(Ray ray, out RayHit hit)
     {
-        var b = this.transform.Position - ray.Origin;
+        var b = this.transform.position - ray.Origin;
 
         var A = new Matrix3x3(
             ray.Direction.X, -V.X, -W.X,
