@@ -1,3 +1,4 @@
+using System.Security.Principal;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -18,6 +19,8 @@ namespace Raytracer {
 
         private float diffuseColor = 0.1f;
 
+        private const float SHADOW_RAY_EPSILON = 1e-4f;
+
         public RayTracingApplication(Image screen) {
             this.scene = new Scene();
             this.screen = screen;
@@ -31,29 +34,24 @@ namespace Raytracer {
 
         public void Run() {
             Light light = new Light(new RaytracingColor(1, 1, 1));
-            light.transform.MoveTo(0, 0, 0);
+            light.transform.MoveTo(-3, 2.5f, 0);
             this.scene.AddLight(light);
 
-            Triangle triangle = new Triangle(
-                new Vector3(-1, -1, 0),
-                new Vector3(0, 1, 0),
-                new Vector3(1, -1, 0)
-            );
-            triangle.transform.MoveTo(-1, -1, 4);
-            triangle.transform.rotation = Quaternion.FromAxisAngle(Vector3.UnitX, (float)-Math.PI / 4);
-            triangle.material.color = new RaytracingColor(0, 0.75f, 0.75f);
-            this.scene.AddObject(triangle);
-
-            Plane plane = new Plane(3, 4);
-            plane.transform.MoveTo(0, -2, 3);
+            Plane plane = new Plane(20, 60);
+            plane.transform.MoveTo(0, -5f, 3);
             plane.material.color = new RaytracingColor(0, 0.35f, 0.75f);
             this.scene.AddObject(plane);
 
-            Cube cube = new Cube(2);
-            cube.transform.MoveTo(1, -0.75f, 5);
+            Cube cube = new Cube(1f);
+            cube.transform.MoveTo(-0.5f, 1.5f, 5);
             cube.transform.rotation = Quaternion.FromAxisAngle(new Vector3(1, 1, 0), -(float)Math.PI / 8);
             cube.material.color = new RaytracingColor(0, 0.75f, 0.35f);
             this.scene.AddObject(cube);
+
+            Sphere sphere = new Sphere(3);
+            sphere.transform.MoveTo(3, -0.75f, 12);
+            sphere.material.color = new RaytracingColor(0.6f, 0.35f, 0.25f);
+            this.scene.AddObject(sphere);
             
             Task.Run(() => Animate(cube));
         }
@@ -101,9 +99,24 @@ namespace Raytracer {
                     RaytracingColor color = new RaytracingColor(0, 0, 0) + diffuseColor;
 
                     foreach (var light in scene.Lights) {
-                        Vector3 toLight = (light.transform.position - hit.Position!.Value).Normalized;
-                        float dot = Math.Max(Vector3.Dot(toLight, hit.Normal!.Value), 0);
-                        color += (hit.HitObject.material?.color ?? new RaytracingColor(1, 1, 1)) * light.color * dot;
+                        Vector3 toLight = (light.transform.position - hit.Position!.Value);
+                        Vector3 toLightNormalized = toLight.Normalized;
+                        
+                        // Check if something blocks the path to the light
+                        Vector3 shadowRayOrigin = hit.Position.Value + toLightNormalized * SHADOW_RAY_EPSILON;
+                        Ray shadowRay = new Ray(shadowRayOrigin, toLightNormalized);
+                        RayHit shadowHit = scene.TraceRay(shadowRay);
+
+                        if (shadowHit.HasHit && shadowHit.Distance < toLight.Magnitude)
+                        {
+                            // Something is in the way -> no color
+                        }
+                        else
+                        {
+                            // Clear path to the light
+                            float dot = Math.Max(Vector3.Dot(toLightNormalized, hit.Normal!.Value), 0);
+                            color += (hit.HitObject.material?.color ?? new RaytracingColor(1, 1, 1)) * light.color * dot;
+                        }
                     }
 
                     var col = color.ToColor();
