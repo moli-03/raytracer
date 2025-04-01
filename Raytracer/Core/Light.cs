@@ -1,11 +1,11 @@
-﻿namespace Raytracer.Core;
+﻿namespace Raytracer.Core.Objects;
 
 public class Light
 {
     public Transform transform { get; }
-    public RaytracingColor color { get; }
+    public Color color { get; }
 
-    public Light(RaytracingColor color)
+    public Light(Color color)
     {
         this.color = color;
         this.transform = new Transform(Vector3.Zero, Quaternion.Identity);

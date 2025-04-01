@@ -1,7 +1,7 @@
 using System;
 using System.Numerics; // Ensure using System.Numerics for Vector3
 
-namespace Raytracer.Core
+namespace Raytracer.Core.Objects
 {
     public class Sphere : BaseObject
     {

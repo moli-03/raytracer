@@ -1,5 +1,5 @@
 
-namespace Raytracer.Core {
+namespace Raytracer.Core.Objects {
 
 	public struct Ray
 	{

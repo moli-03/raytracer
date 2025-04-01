@@ -1,5 +1,5 @@
 
-namespace Raytracer.Core {
+namespace Raytracer.Core.Objects {
 	public class Scene
 	{
 		public Camera camera = new Camera(Vector3.Zero, new Vector3(0, 0, 1), new Vector3(0, 1, 0), 75f);

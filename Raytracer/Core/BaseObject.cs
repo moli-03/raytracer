@@ -1,6 +1,6 @@
-using System.Drawing;
+using Raytracer.Core.Objects.Materials;
 
-namespace Raytracer.Core {
+namespace Raytracer.Core.Objects {
 
 	public abstract class BaseObject
 	{
@@ -10,7 +10,7 @@ namespace Raytracer.Core {
 
 		public BaseObject(Vector3 position, Quaternion rotation) {
 			this.transform = new Transform(position, rotation);
-			this.material = Raytracer.Core.Material.SingleColor(new RaytracingColor(0, 0, 1));
+			this.material = MaterialLibrary.WhitePlastic;
 		}
 
 		public BaseObject(Vector3 position) : this (position, Quaternion.Identity) { }
