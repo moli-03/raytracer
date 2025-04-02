@@ -24,14 +24,25 @@ public class RayTracingApplication {
     public RayTracingApplication(Image screen) {
         this.scene = new Scene();
         this.screen = screen;
-        this.frame = new WriteableBitmap(500, 500, 96, 96, PixelFormats.Bgr32, null);
+    
+        // Get the actual dimensions from the screen element
+        double screenWidth = screen.Width > 0 ? screen.Width : 500;
+        double screenHeight = screen.Height > 0 ? screen.Height : 500;
+    
+        this.frame = new WriteableBitmap(
+            (int)screenWidth, 
+            (int)screenHeight, 
+            96, 96, 
+            PixelFormats.Bgr32, 
+            null
+        );
+    
         this.screen.Source = this.frame;
-
         width = frame.PixelWidth;
         height = frame.PixelHeight;
         stride = width * 4;
     }
-
+    
     public void Run() {
         Light light = new Light(new Color(1, 1, 1));
         light.transform.MoveTo(-3, 2.5f, 0);
