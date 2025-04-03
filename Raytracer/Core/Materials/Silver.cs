@@ -1,4 +1,4 @@
-﻿namespace Raytracer.Core.Objects.Materials;
+﻿namespace Raytracer.Core.Materials;
 
 public class Silver() : Material(new Color(0.19225f, 0.19225f, 0.19225f),
     new Color(0.50754f, 0.50754f, 0.50754f),

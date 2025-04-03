@@ -1,4 +1,4 @@
-﻿namespace Raytracer.Core.Objects.Materials;
+﻿namespace Raytracer.Core.Materials;
 
 public class Emerald() : Material(
     new Color(0.0215f, 0.1745f, 0.0215f),

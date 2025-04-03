@@ -1,4 +1,6 @@
-﻿namespace Raytracer.Core.Objects;
+﻿using Raytracer.Core.Math;
+
+namespace Raytracer.Core.Objects;
 
 public class Triangle : BaseObject
 {

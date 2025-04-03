@@ -1,4 +1,4 @@
-﻿namespace Raytracer.Core.Objects.Materials;
+﻿namespace Raytracer.Core.Materials;
 
 public class CyanPlastic() : Material(new Color(0f, 0.1f, 0.06f),
     new Color(0f, 0.50980392f, 0.50980392f),

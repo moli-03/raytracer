@@ -1,4 +1,4 @@
-﻿namespace Raytracer.Core.Objects.Materials;
+﻿namespace Raytracer.Core.Materials;
 
 public class RedPlastic() : Material(new Color(0f, 0f, 0f),
     new Color(0.5f, 0f, 0f),

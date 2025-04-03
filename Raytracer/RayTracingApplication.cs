@@ -2,9 +2,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Raytracer.Core;
 using Raytracer.Core.Objects;
-using Raytracer.Core.Objects.Materials;
-using Color = Raytracer.Core.Objects.Color;
+using Raytracer.Core.Materials;
+using Raytracer.Core.Math;
+using Color = Raytracer.Core.Color;
 
 namespace Raytracer;
 

@@ -1,4 +1,6 @@
-﻿namespace Raytracer.Core.Objects;
+﻿using Raytracer.Core.Math;
+
+namespace Raytracer.Core;
 
 public class Light
 {

@@ -1,5 +1,4 @@
-using System;
-using System.Numerics; // Ensure using System.Numerics for Vector3
+using Raytracer.Core.Math;
 
 namespace Raytracer.Core.Objects
 {
@@ -27,7 +26,7 @@ namespace Raytracer.Core.Objects
             }
 
             // Compute the two possible intersection points
-            float sqrtDiscriminant = (float)Math.Sqrt(discriminant);
+            float sqrtDiscriminant = (float)System.Math.Sqrt(discriminant);
             float t1 = (-b - sqrtDiscriminant) / (2.0f * a);
             float t2 = (-b + sqrtDiscriminant) / (2.0f * a);
 

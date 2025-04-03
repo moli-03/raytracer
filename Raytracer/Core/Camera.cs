@@ -1,4 +1,4 @@
-using Raytracer.Core.Objects;
+using Raytracer.Core.Math;
 
 namespace Raytracer.Core;
 
@@ -21,7 +21,7 @@ public class Camera
 	{
 		// Adjust for screen resolution and field of view
 		float aspectRatio = (float)width / height;
-		float scale = (float)Math.Tan(Fov * 0.5 * Math.PI / 180);
+		float scale = (float)System.Math.Tan(Fov * 0.5 * System.Math.PI / 180);
 		float imageX = (2 * ((x + 0.5f) / width) - 1) * scale * aspectRatio;
 		float imageY = (1 - 2 * ((y + 0.5f) / height)) * scale;
 

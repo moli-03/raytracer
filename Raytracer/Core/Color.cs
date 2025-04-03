@@ -1,7 +1,4 @@
-﻿
-using System.Drawing;
-
-namespace Raytracer.Core.Objects;
+﻿namespace Raytracer.Core;
 
 public struct Color
 {
@@ -9,9 +6,9 @@ public struct Color
 
     public Color(float r, float g, float b)
     {
-        R = Math.Clamp(r, 0, 1);
-        G = Math.Clamp(g, 0, 1);
-        B = Math.Clamp(b, 0, 1);
+        R = System.Math.Clamp(r, 0, 1);
+        G = System.Math.Clamp(g, 0, 1);
+        B = System.Math.Clamp(b, 0, 1);
     }
     
     

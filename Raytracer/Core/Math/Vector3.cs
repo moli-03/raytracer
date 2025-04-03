@@ -1,4 +1,4 @@
-﻿namespace Raytracer.Core.Objects
+﻿namespace Raytracer.Core.Math
 {
     public struct Vector3
     {
@@ -20,7 +20,7 @@
 
         public float Magnitude
         {
-            get { return (float)Math.Sqrt(X * X + Y * Y + Z * Z); }
+            get { return (float)System.Math.Sqrt(X * X + Y * Y + Z * Z); }
         }
 
         public Vector3 Normalized

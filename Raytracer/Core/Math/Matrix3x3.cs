@@ -1,4 +1,4 @@
-﻿namespace Raytracer.Core.Objects;
+﻿namespace Raytracer.Core.Math;
 
 public struct Matrix3x3
 {
@@ -34,7 +34,7 @@ public struct Matrix3x3
     {
         float det = Det();
 
-        if (Math.Abs(det) < float.Epsilon)
+        if (System.Math.Abs(det) < float.Epsilon)
         {
             inverse = default;
             return false;

@@ -1,4 +1,4 @@
-﻿namespace Raytracer.Core.Objects.Materials;
+﻿namespace Raytracer.Core.Materials;
 
 public class Gold() : Material(new Color(0.24725f, 0.1995f, 0.0745f),
     new Color(0.75164f, 0.60648f, 0.22648f),

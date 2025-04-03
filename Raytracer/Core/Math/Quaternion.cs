@@ -1,4 +1,4 @@
-namespace Raytracer.Core.Objects {
+namespace Raytracer.Core.Math;
 
 using System;
 
@@ -20,7 +20,7 @@ public struct Quaternion
     }
 
     // Length (magnitude) of the quaternion
-    public float Magnitude => (float)Math.Sqrt(X * X + Y * Y + Z * Z + W * W);
+    public float Magnitude => (float)System.Math.Sqrt(X * X + Y * Y + Z * Z + W * W);
 
     // Normalized quaternion
     public Quaternion Normalized
@@ -131,6 +131,4 @@ public struct Quaternion
     {
         return $"Quaternion({X}, {Y}, {Z}, {W})";
     }
-}
-
 }

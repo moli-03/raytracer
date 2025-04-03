@@ -1,4 +1,4 @@
-﻿namespace Raytracer.Core.Objects.Materials;
+﻿namespace Raytracer.Core.Materials;
 
 public class Turquoise() : Material(new Color(0.1f, 0.18725f, 0.1745f),
     new Color(0.396f, 0.74151f, 0.69102f),
