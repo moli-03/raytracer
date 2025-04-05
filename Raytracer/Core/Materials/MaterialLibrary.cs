@@ -3,24 +3,24 @@
 public class MaterialLibrary
 {
     // Private static fields to hold the single instance of each material
-    private static Emerald _emerald;
-    private static Jade _jade;
-    private static Obsidian _obsidian;
-    private static Pearl _pearl;
-    private static Ruby _ruby;
-    private static Turquoise _turquoise;
-    private static Brass _brass;
-    private static Bronze _bronze;
-    private static Chrome _chrome;
-    private static Copper _copper;
-    private static Gold _gold;
-    private static Silver _silver;
-    private static BlackPlastic _blackPlastic;
-    private static CyanPlastic _cyanPlastic;
-    private static GreenPlastic _greenPlastic;
-    private static RedPlastic _redPlastic;
-    private static WhitePlastic _whitePlastic;
-    private static YellowPlastic _yellowPlastic;
+    private static Emerald? _emerald;
+    private static Jade? _jade;
+    private static Obsidian? _obsidian;
+    private static Pearl? _pearl;
+    private static Ruby? _ruby;
+    private static Turquoise? _turquoise;
+    private static Brass? _brass;
+    private static Bronze? _bronze;
+    private static Chrome? _chrome;
+    private static Copper? _copper;
+    private static Gold? _gold;
+    private static Silver? _silver;
+    private static BlackPlastic? _blackPlastic;
+    private static CyanPlastic? _cyanPlastic;
+    private static GreenPlastic? _greenPlastic;
+    private static RedPlastic? _redPlastic;
+    private static WhitePlastic? _whitePlastic;
+    private static YellowPlastic? _yellowPlastic;
 
     // Public static properties that return the same instance each time
     public static Emerald Emerald => _emerald ??= new Emerald();

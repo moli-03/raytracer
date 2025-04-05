@@ -50,10 +50,16 @@ public class RayTracingApplication {
         light.transform.MoveTo(-3, 2.5f, 0);
         this.scene.AddLight(light);
 
-        Plane plane = new Plane(20, 60);
+        Plane plane = new Plane(30, 60);
         plane.transform.MoveTo(0, -5f, 3);
         plane.material = MaterialLibrary.WhitePlastic;
         this.scene.AddObject(plane);
+        
+        Plane leftWall = new Plane(20, 60);
+        leftWall.transform.MoveTo(-15, -5f, 3);
+        leftWall.transform.rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, -(float)Math.PI / 2f);
+        leftWall.material = MaterialLibrary.CyanPlastic;
+        this.scene.AddObject(leftWall);
 
         Cube cube = new Cube(2f);
         cube.transform.MoveTo(1.2f, 1.2f, 5);
@@ -77,7 +83,6 @@ public class RayTracingApplication {
     private void Animate(Cube cube) {
         int i = 0;
         double piOver32 = Math.PI / 32;
-        double piOver64 = Math.PI / 64;
 
         var center = new Vector3(0, 0, 12f);
 
