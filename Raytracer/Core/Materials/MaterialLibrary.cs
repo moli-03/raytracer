@@ -21,6 +21,7 @@ public class MaterialLibrary
     private static RedPlastic? _redPlastic;
     private static WhitePlastic? _whitePlastic;
     private static YellowPlastic? _yellowPlastic;
+    private static Glass? _glass;
 
     // Public static properties that return the same instance each time
     public static Emerald Emerald => _emerald ??= new Emerald();
@@ -41,4 +42,5 @@ public class MaterialLibrary
     public static RedPlastic RedPlastic => _redPlastic ??= new RedPlastic();
     public static WhitePlastic WhitePlastic => _whitePlastic ??= new WhitePlastic();
     public static YellowPlastic YellowPlastic => _yellowPlastic ??= new YellowPlastic();
+    public static Glass Glass => _glass ??= new Glass();
 }
