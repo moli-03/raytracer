@@ -32,6 +32,17 @@ public class Transform
         set => this.UpdateLocalRotation(value);
     }
 
+    private Vector3 _scale = Vector3.UnitX + Vector3.UnitY + Vector3.UnitZ; // Default 1,1,1
+    public Vector3 Scale 
+    {
+        get => _scale;
+        set 
+        {
+            _scale = value;
+            ScaleChanged?.Invoke();
+        }
+    }
+
     private Transform? _parent;
     public Transform? parent
     {
@@ -51,10 +62,14 @@ public class Transform
     public delegate void RotationChangedEvent();
     public event RotationChangedEvent? RotationChanged;
 
+    public delegate void ScaleChangedEvent();
+    public event ScaleChangedEvent? ScaleChanged;
+
     public Transform(Vector3 position, Quaternion rotation)
     {
         this.position = position;
         this.rotation = rotation;
+        this.Scale = Vector3.UnitX + Vector3.UnitY + Vector3.UnitZ; // (1,1,1)
     }
 
     private void UpdateLocalPosition(Vector3 pos)
@@ -145,7 +160,14 @@ public class Transform
 
     public Vector3 TransformToWorldPosition(Vector3 localPos)
     {
-        Vector3 worldPosition = rotation * localPos + position;
+        // Apply scale to the local position
+        Vector3 scaledPos = new Vector3(
+            localPos.X * _scale.X,
+            localPos.Y * _scale.Y,
+            localPos.Z * _scale.Z
+        );
+        
+        Vector3 worldPosition = rotation * scaledPos + position;
 
         if (parent != null)
         {
@@ -162,7 +184,14 @@ public class Transform
             pos = parent.TransformToLocalPosition(pos);
         }
 
-        return rotation.Inverse * (pos - position);
+        Vector3 localPos = rotation.Inverse * (pos - position);
+        
+        // Remove scale from local position
+        return new Vector3(
+            _scale.X != 0 ? localPos.X / _scale.X : localPos.X,
+            _scale.Y != 0 ? localPos.Y / _scale.Y : localPos.Y,
+            _scale.Z != 0 ? localPos.Z / _scale.Z : localPos.Z
+        );
     }
 
     public Quaternion TransformToWorldRotation(Quaternion localRot)

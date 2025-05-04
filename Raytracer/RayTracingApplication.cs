@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -6,6 +7,7 @@ using Raytracer.Core;
 using Raytracer.Core.Objects;
 using Raytracer.Core.Materials;
 using Raytracer.Core.Math;
+using Raytracer.IO;
 using Color = Raytracer.Core.Color;
 
 namespace Raytracer;
@@ -25,6 +27,9 @@ public class RayTracingApplication {
     private const int REFLECT_RECURSION_DEPTH = 6;
     private const float AIR_REFRACTIVE_INDEX = 1.0f;
 
+    // path to models directory (relative to executable)
+    private static readonly string AssetsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets");
+    
     public RayTracingApplication(Image screen) {
         this.scene = new Scene();
         this.screen = screen;
@@ -45,52 +50,100 @@ public class RayTracingApplication {
         width = frame.PixelWidth;
         height = frame.PixelHeight;
         stride = width * 4;
+        
+        Console.WriteLine($"RayTracingApplication initialized with dimensions: {width}x{height}");
+        Console.WriteLine($"Using assets directory: {AssetsDirectory}");
     }
     
     public void Run() {
+        Console.WriteLine("Initializing scene...");
+        
         Light light = new Light(new Color(1, 1, 1));
         light.transform.MoveTo(-3, 2.5f, 0);
         this.scene.AddLight(light);
+        Console.WriteLine($"Added main light at position: {light.transform.position}");
 
+        Console.WriteLine("Adding scene objects...");
+        
         Plane plane = new Plane(30, 60);
         plane.transform.MoveTo(0, -5f, 3);
         plane.material = MaterialLibrary.WhitePlastic;
         this.scene.AddObject(plane);
+        Console.WriteLine($"Added floor plane at position: {plane.transform.position} with dimensions: 30x60");
         
         Plane leftWall = new Plane(20, 60);
         leftWall.transform.MoveTo(-15, -5f, 3);
         leftWall.transform.rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, -(float)Math.PI / 2f);
         leftWall.material = MaterialLibrary.CyanPlastic;
         this.scene.AddObject(leftWall);
+        Console.WriteLine($"Added left wall at position: {leftWall.transform.position} with dimensions: 20x60");
 
-        Cube cube = new Cube(2f);
-        cube.transform.MoveTo(0f, 0f, 5f);
-        cube.transform.rotation = Quaternion.FromAxisAngle(new Vector3(1, 1, 0), -(float)Math.PI / 8);
-        cube.material = MaterialLibrary.Glass;
+        // Only load and add the sword if enabled
+        try {
+            Console.WriteLine("Loading sword model...");
+            string objFilePath = Path.Combine(AssetsDirectory, "CaeraSword.obj");
+            
+            if (!File.Exists(objFilePath)) {
+                Console.WriteLine($"ERROR: Sword model file not found at {objFilePath}");
+            } else {
+                Mesh sword = ObjLoader.LoadFromFile(objFilePath);
+                
+                // Move the sword further away to avoid intersection issues
+                sword.transform.MoveTo(-2f, 0f, 10f);
+                sword.transform.rotation = Quaternion.FromAxisAngle(Vector3.UnitY, (float)Math.PI);
+                // Scale down more to ensure it's not too large
+                sword.transform.Scale = new Vector3(0.1f, 0.1f, 0.1f);
+                sword.material = MaterialLibrary.Ruby;
+                
+                Console.WriteLine($"Sword loaded with {sword.GetTriangleCount()} triangles");
+                this.scene.AddObject(sword);
+                Console.WriteLine("Sword added to scene");
+            }
+        } catch (Exception ex) {
+            Console.WriteLine($"Error loading sword: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
+        }
+
+        // Add a simple cube instead of or in addition to the sword
+        Cube cube = new Cube(2);
+        cube.transform.MoveTo(0, 0, 15);
+        cube.material = MaterialLibrary.Gold;
         this.scene.AddObject(cube);
+        Console.WriteLine($"Added cube at position: {cube.transform.position} with size: 2");
 
         Sphere sphere = new Sphere(3);
-        sphere.transform.MoveTo(3, -0.75f, 12);
+        // Move sphere slightly to avoid overlap with the sword/cube
+        sphere.transform.MoveTo(4, -0.75f, 12);
         sphere.material = MaterialLibrary.Silver;
         this.scene.AddObject(sphere);
+        Console.WriteLine($"Added sphere at position: {sphere.transform.position} with radius: 3");
         
         Sphere sphere2 = new Sphere(2);
         sphere2.transform.MoveTo(-5, -0.75f, 15);
         sphere2.material = MaterialLibrary.Ruby;
         this.scene.AddObject(sphere2);
+        Console.WriteLine($"Added sphere2 at position: {sphere2.transform.position} with radius: 2");
+
+        Task.Factory.StartNew(this.Animate);
         
-        Task.Run(() => Animate(cube));
+        Console.WriteLine($"Scene initialized with {scene.Objects.Count} objects and {scene.Lights.Count} lights");
+        Console.WriteLine($"Camera position: {scene.camera.Position}, looking at: {scene.camera.LookDirection}");
     }
 
-    private void Animate(Cube cube) {
+    private void Animate() {
         int i = 0;
         double piOver32 = Math.PI / 32;
 
         var center = new Vector3(0, 0, 12f);
-
+        
+        Console.WriteLine("Starting animation loop...");
+        int frameCount = 0;
+        DateTime startTime = DateTime.Now;
+        
         while (true) {
             i++;
-            DateTime start = DateTime.Now;
+            frameCount++;
+            DateTime frameStart = DateTime.Now;
 
             byte[] pixels = RenderFrame();
 
@@ -101,10 +154,14 @@ public class RayTracingApplication {
                 frame.Unlock();
             });
 
-            Console.WriteLine("Render duration: " + (DateTime.Now - start).TotalMilliseconds + "ms");
+            TimeSpan renderTime = DateTime.Now - frameStart;
+            Console.WriteLine($"Frame {frameCount}: Render duration: {renderTime.TotalMilliseconds:F2}ms ({1000/renderTime.TotalMilliseconds:F1} FPS)");
             
-            cube.transform.rotation = Quaternion.FromAxisAngle(new Vector3(0.25f, 1f, 0.5f), (float)(piOver32 * i));
-
+            if (frameCount % 100 == 0) {
+                TimeSpan totalTime = DateTime.Now - startTime;
+                Console.WriteLine($"Performance summary: Avg FPS: {frameCount / totalTime.TotalSeconds:F1} over {totalTime.TotalSeconds:F1}s");
+            }
+            
             float x = (float)Math.Cos(piOver32 * i) * 12f + center.X;
             float z = (float)Math.Sin(piOver32 * i) * 12f + center.Z;
             
@@ -158,7 +215,7 @@ public class RayTracingApplication {
         RayHit hit = scene.TraceRay(ray);
 
         if (!hit.HasHit) {
-            return new Color(0, 0, 0); // Return background color
+            return new Color(0.05f, 0.05f, 0.1f); // Return a dark blue background color instead of black
         }
 
         Material material = hit.HitObject.material;
