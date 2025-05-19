@@ -1,12 +1,14 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Raytracer.Core;
 using Raytracer.Core.Objects;
 using Raytracer.Core.Materials;
 using Raytracer.Core.Math;
+using Raytracer.Core.Scenes;
 using Raytracer.IO;
 using Color = Raytracer.Core.Color;
 
@@ -17,10 +19,17 @@ public class RayTracingApplication {
     private WriteableBitmap frame;
     private Image screen;
     private Scene scene;
+    private SceneManager sceneManager;
+    private string currentSceneName;
 
     private int width;
     private int height;
     private int stride;
+    
+    // Animation state
+    private int frameCount = 0;
+    private DateTime lastFrameTime;
+    private float deltaTime = 0;
 
     private const float SHADOW_RAY_EPSILON = 1e-4f;
     private const float SURFACE_EPSILON = 1e-4f;
@@ -33,6 +42,15 @@ public class RayTracingApplication {
     public RayTracingApplication(Image screen) {
         this.scene = new Scene();
         this.screen = screen;
+        
+        // Create and configure the scene manager
+        this.sceneManager = new SceneManager(this.scene);
+        
+        // Register available scenes
+        this.sceneManager.RegisterScene(new ExamScene());
+        this.sceneManager.RegisterScene(new DefaultScene());
+        this.sceneManager.RegisterScene(new SpheresScene());
+        this.sceneManager.SetActiveScene(this.sceneManager.GetAvailableScenes().First());
     
         // Get the actual dimensions from the screen element
         double screenWidth = screen.Width > 0 ? screen.Width : 500;
@@ -56,95 +74,27 @@ public class RayTracingApplication {
     }
     
     public void Run() {
-        Console.WriteLine("Initializing scene...");
+        Console.WriteLine("Starting ray tracer application...");
         
-        Light light = new Light(new Color(1, 1, 1));
-        light.transform.MoveTo(-3, 2.5f, 0);
-        this.scene.AddLight(light);
-        Console.WriteLine($"Added main light at position: {light.transform.position}");
-
-        Console.WriteLine("Adding scene objects...");
-        
-        Plane plane = new Plane(30, 60);
-        plane.transform.MoveTo(0, -5f, 3);
-        plane.material = MaterialLibrary.WhitePlastic;
-        this.scene.AddObject(plane);
-        Console.WriteLine($"Added floor plane at position: {plane.transform.position} with dimensions: 30x60");
-        
-        Plane leftWall = new Plane(20, 60);
-        leftWall.transform.MoveTo(-15, -5f, 3);
-        leftWall.transform.rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, -(float)Math.PI / 2f);
-        leftWall.material = MaterialLibrary.CyanPlastic;
-        this.scene.AddObject(leftWall);
-        Console.WriteLine($"Added left wall at position: {leftWall.transform.position} with dimensions: 20x60");
-
-        // Only load and add the sword if enabled
-        try {
-            Console.WriteLine("Loading sword model...");
-            string objFilePath = Path.Combine(AssetsDirectory, "CaeraSword.obj");
-            
-            if (!File.Exists(objFilePath)) {
-                Console.WriteLine($"ERROR: Sword model file not found at {objFilePath}");
-            } else {
-                Mesh sword = ObjLoader.LoadFromFile(objFilePath);
-                
-                // Move the sword further away to avoid intersection issues
-                sword.transform.MoveTo(-2f, 0f, 10f);
-                sword.transform.rotation = Quaternion.FromAxisAngle(Vector3.UnitY, (float)Math.PI);
-                // Scale down more to ensure it's not too large
-                sword.transform.Scale = new Vector3(0.1f, 0.1f, 0.1f);
-                sword.material = MaterialLibrary.Ruby;
-                
-                Console.WriteLine($"Sword loaded with {sword.GetTriangleCount()} triangles");
-                this.scene.AddObject(sword);
-                Console.WriteLine("Sword added to scene");
-            }
-        } catch (Exception ex) {
-            Console.WriteLine($"Error loading sword: {ex.Message}");
-            Console.WriteLine(ex.StackTrace);
-        }
-
-        // Add a simple cube instead of or in addition to the sword
-        Cube cube = new Cube(2);
-        cube.transform.MoveTo(0, 0, 15);
-        cube.material = MaterialLibrary.Gold;
-        this.scene.AddObject(cube);
-        Console.WriteLine($"Added cube at position: {cube.transform.position} with size: 2");
-
-        Sphere sphere = new Sphere(3);
-        // Move sphere slightly to avoid overlap with the sword/cube
-        sphere.transform.MoveTo(4, -0.75f, 12);
-        sphere.material = MaterialLibrary.Silver;
-        this.scene.AddObject(sphere);
-        Console.WriteLine($"Added sphere at position: {sphere.transform.position} with radius: 3");
-        
-        Sphere sphere2 = new Sphere(2);
-        sphere2.transform.MoveTo(-5, -0.75f, 15);
-        sphere2.material = MaterialLibrary.Ruby;
-        this.scene.AddObject(sphere2);
-        Console.WriteLine($"Added sphere2 at position: {sphere2.transform.position} with radius: 2");
-
+        // Start animation loop
+        lastFrameTime = DateTime.Now;
         Task.Factory.StartNew(this.Animate);
-        
-        Console.WriteLine($"Scene initialized with {scene.Objects.Count} objects and {scene.Lights.Count} lights");
-        Console.WriteLine($"Camera position: {scene.camera.Position}, looking at: {scene.camera.LookDirection}");
     }
 
     private void Animate() {
-        int i = 0;
-        double piOver32 = Math.PI / 32;
-
-        var center = new Vector3(0, 0, 12f);
-        
         Console.WriteLine("Starting animation loop...");
-        int frameCount = 0;
-        DateTime startTime = DateTime.Now;
         
         while (true) {
-            i++;
-            frameCount++;
             DateTime frameStart = DateTime.Now;
+            
+            // Calculate delta time
+            deltaTime = (float)(frameStart - lastFrameTime).TotalSeconds;
+            lastFrameTime = frameStart;
+            
+            // Update the current scene
+            sceneManager.UpdateCurrentScene(frameCount, deltaTime);
 
+            // Render the frame
             byte[] pixels = RenderFrame();
 
             Application.Current.Dispatcher.Invoke(() =>
@@ -154,19 +104,15 @@ public class RayTracingApplication {
                 frame.Unlock();
             });
 
+            // Performance tracking
             TimeSpan renderTime = DateTime.Now - frameStart;
-            Console.WriteLine($"Frame {frameCount}: Render duration: {renderTime.TotalMilliseconds:F2}ms ({1000/renderTime.TotalMilliseconds:F1} FPS)");
-            
-            if (frameCount % 100 == 0) {
-                TimeSpan totalTime = DateTime.Now - startTime;
-                Console.WriteLine($"Performance summary: Avg FPS: {frameCount / totalTime.TotalSeconds:F1} over {totalTime.TotalSeconds:F1}s");
+            if (frameCount % 10 == 0)
+            {
+                Console.WriteLine($"Frame {frameCount}: Render duration: {renderTime.TotalMilliseconds:F2}ms ({1000/renderTime.TotalMilliseconds:F1} FPS)");
+                Console.WriteLine($"Current scene: {sceneManager.CurrentSceneName}");
             }
             
-            float x = (float)Math.Cos(piOver32 * i) * 12f + center.X;
-            float z = (float)Math.Sin(piOver32 * i) * 12f + center.Z;
-            
-            this.scene.camera.Position = new Vector3(x, 0, z);
-            this.scene.camera.LookDirection = center - this.scene.camera.Position;
+            frameCount++;
         }
     }
 

@@ -9,14 +9,22 @@ public class Scene
 	public List<BaseObject> Objects { get; } = new List<BaseObject>();
 	public List<Light> Lights { get; } = new List<Light>();
 
-	public void AddObject(BaseObject sphere)
+	public void AddObject(BaseObject obj)
 	{
-		Objects.Add(sphere);
+		Objects.Add(obj);
 	}
 
 	public void AddLight(Light light)
 	{
 		Lights.Add(light);
+	}
+	
+	public void Clear()
+	{
+		Objects.Clear();
+		Lights.Clear();
+		// Reset camera to default
+		camera = new Camera(Vector3.Zero, new Vector3(0, 0, 1), new Vector3(0, 1, 0), 75f);
 	}
 
 	public RayHit TraceRay(Ray ray)
