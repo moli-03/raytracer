@@ -5,6 +5,8 @@ namespace Raytracer.Core.Scenes;
 public abstract class BaseScene : IScene
 {
     public abstract string Name { get; }
+
+    public abstract bool Animated { get;  }
     
     public abstract void Initialize(Scene scene);
     

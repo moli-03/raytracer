@@ -9,6 +9,8 @@ namespace Raytracer.Core.Scenes;
 public class DefaultScene : BaseScene
 {
     public override string Name => "Default Scene";
+
+    public override bool Animated => true;
     
     // Assets path
     private static readonly string AssetsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets");

@@ -10,6 +10,11 @@ public interface IScene
     string Name { get; }
     
     /// <summary>
+    /// Is the scene animated?
+    /// </summary>
+    bool Animated { get;  }
+    
+    /// <summary>
     /// Initialize the scene with all objects, lights, and camera settings
     /// </summary>
     /// <param name="scene">The scene object to populate</param>

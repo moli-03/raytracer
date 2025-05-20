@@ -7,6 +7,8 @@ namespace Raytracer.Core.Scenes;
 public class SpheresScene : BaseScene
 {
     public override string Name => "Spheres Scene";
+
+    public override bool Animated => true;
     
     // Keep references to objects we want to animate
     private List<Sphere> animatedSpheres = new List<Sphere>();

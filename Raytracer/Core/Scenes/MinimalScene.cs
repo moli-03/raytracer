@@ -8,6 +8,8 @@ public class MinimalScene : BaseScene
 {
     public override string Name => "Minimal Scene";
 
+    public override bool Animated => true;
+
     private Sphere centralSphere;
     
     public override void Initialize(Scene scene)

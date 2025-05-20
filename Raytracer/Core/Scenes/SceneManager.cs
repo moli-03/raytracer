@@ -46,6 +46,11 @@ public class SceneManager
         Console.WriteLine($"Scene not found: {sceneName}");
         return false;
     }
+
+    public IScene? GetCurrentScene()
+    {
+        return currentScene;
+    }
     
     public void UpdateCurrentScene(int frameCount, float deltaTime)
     {
@@ -54,6 +59,7 @@ public class SceneManager
     
     public IEnumerable<string> GetAvailableScenes()
     {
+        // Return scenes in registration order
         return scenes.Keys;
     }
 }

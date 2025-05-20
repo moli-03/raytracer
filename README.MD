@@ -25,11 +25,13 @@ The raytracer includes a flexible scene system that allows for:
 1. **Default Scene** - A showcase of various primitives and a loaded 3D model
 2. **Spheres Scene** - A grid of animated spheres with a wave-like movement
 3. **Minimal Scene** - A simple scene with a bouncing sphere for testing
+4. **Exam Scene** - A static scene for exam demonstration
 
 ### Controls
 
 - Press `1-3` to switch between scenes
-- Press `Space` to restart the current animation
+- Press `Space` to restart the current animation (if supported)
+- Animation is only enabled for scenes that support it
 
 ## How to Create a New Scene
 

@@ -2,8 +2,10 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Threading; // Add for CancellationToken
 using Raytracer.Core;
 using Raytracer.Core.Objects;
 using Raytracer.Core.Materials;
@@ -35,9 +37,12 @@ public class RayTracingApplication {
     private const float SURFACE_EPSILON = 1e-4f;
     private const int REFLECT_RECURSION_DEPTH = 6;
     private const float AIR_REFRACTIVE_INDEX = 1.0f;
-
+    
     // path to models directory (relative to executable)
     private static readonly string AssetsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets");
+
+    private CancellationTokenSource animationCts;
+    private Task animationTask;
     
     public RayTracingApplication(Image screen) {
         this.scene = new Scene();
@@ -50,6 +55,8 @@ public class RayTracingApplication {
         this.sceneManager.RegisterScene(new ExamScene());
         this.sceneManager.RegisterScene(new DefaultScene());
         this.sceneManager.RegisterScene(new SpheresScene());
+        this.sceneManager.RegisterScene(new MinimalScene());
+        // Set the first scene as active
         this.sceneManager.SetActiveScene(this.sceneManager.GetAvailableScenes().First());
     
         // Get the actual dimensions from the screen element
@@ -71,38 +78,67 @@ public class RayTracingApplication {
         
         Console.WriteLine($"RayTracingApplication initialized with dimensions: {width}x{height}");
         Console.WriteLine($"Using assets directory: {AssetsDirectory}");
+
+        // Listen for key events for scene switching and animation restart
+        ComponentDispatcher.ThreadPreprocessMessage += OnThreadPreprocessMessage;
     }
     
     public void Run() {
         Console.WriteLine("Starting ray tracer application...");
-        
-        // Start animation loop
-        lastFrameTime = DateTime.Now;
-        Task.Factory.StartNew(this.Animate);
+        StartOrRenderScene();
     }
 
-    private void Animate() {
+    private void StartOrRenderScene()
+    {
+        var currentScene = sceneManager.GetCurrentScene();
+        CancelAnimationTask();
+
+        if (currentScene != null && currentScene.Animated)
+        {
+            lastFrameTime = DateTime.Now;
+            animationCts = new CancellationTokenSource();
+            animationTask = Task.Factory.StartNew(() => Animate(animationCts.Token), animationCts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+        }
+        else
+        {
+            // Render a single frame for static scenes in a background thread
+            animationCts = new CancellationTokenSource();
+            animationTask = Task.Factory.StartNew(() =>
+            {
+                RenderAndDisplayFrame();
+            }, animationCts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+        }
+    }
+
+    private void CancelAnimationTask()
+    {
+        if (animationCts != null)
+        {
+            animationCts.Cancel();
+            try { animationTask?.Wait(); } catch { }
+            animationCts.Dispose();
+            animationCts = null;
+            animationTask = null;
+        }
+    }
+
+    private void Animate(CancellationToken token) {
         Console.WriteLine("Starting animation loop...");
-        
-        while (true) {
+        while (!token.IsCancellationRequested) {
             DateTime frameStart = DateTime.Now;
-            
+
             // Calculate delta time
             deltaTime = (float)(frameStart - lastFrameTime).TotalSeconds;
             lastFrameTime = frameStart;
-            
-            // Update the current scene
-            sceneManager.UpdateCurrentScene(frameCount, deltaTime);
 
-            // Render the frame
-            byte[] pixels = RenderFrame();
-
-            Application.Current.Dispatcher.Invoke(() =>
+            // Only update scene if animated
+            var currentScene = sceneManager.GetCurrentScene();
+            if (currentScene != null && currentScene.Animated)
             {
-                frame.Lock();
-                frame.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
-                frame.Unlock();
-            });
+                sceneManager.UpdateCurrentScene(frameCount, deltaTime);
+            }
+
+            RenderAndDisplayFrame();
 
             // Performance tracking
             TimeSpan renderTime = DateTime.Now - frameStart;
@@ -111,9 +147,20 @@ public class RayTracingApplication {
                 Console.WriteLine($"Frame {frameCount}: Render duration: {renderTime.TotalMilliseconds:F2}ms ({1000/renderTime.TotalMilliseconds:F1} FPS)");
                 Console.WriteLine($"Current scene: {sceneManager.CurrentSceneName}");
             }
-            
+
             frameCount++;
         }
+    }
+
+    private void RenderAndDisplayFrame()
+    {
+        byte[] pixels = RenderFrame();
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            frame.Lock();
+            frame.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
+            frame.Unlock();
+        });
     }
 
     private byte[] RenderFrame() {
@@ -331,5 +378,54 @@ public class RayTracingApplication {
         refracted = n * incident + (n * cosI - cosT) * normal;
         refracted = refracted.Normalized; // Ensure direction is normalized
         return true;
+    }
+
+    // Keyboard event handler for scene switching and animation restart
+    private void OnThreadPreprocessMessage(ref MSG msg, ref bool handled)
+    {
+        if (msg.message == 0x0100) // WM_KEYDOWN
+        {
+            var key = KeyInterop.KeyFromVirtualKey((int)msg.wParam);
+            if (key == Key.D1)
+            {
+                SwitchSceneByIndex(0);
+            }
+            else if (key == Key.D2)
+            {
+                SwitchSceneByIndex(1);
+            }
+            else if (key == Key.D3)
+            {
+                SwitchSceneByIndex(2);
+            }
+            else if (key == Key.Space)
+            {
+                RestartCurrentScene();
+            }
+        }
+    }
+
+    private void SwitchSceneByIndex(int index)
+    {
+        var scenes = sceneManager.GetAvailableScenes().ToList();
+        if (index >= 0 && index < scenes.Count)
+        {
+            sceneManager.SetActiveScene(scenes[index]);
+            frameCount = 0;
+            Console.WriteLine($"Switched to scene: {scenes[index]}");
+            StartOrRenderScene();
+        }
+    }
+
+    private void RestartCurrentScene()
+    {
+        var currentName = sceneManager.CurrentSceneName;
+        if (!string.IsNullOrEmpty(currentName))
+        {
+            sceneManager.SetActiveScene(currentName);
+            frameCount = 0;
+            Console.WriteLine($"Restarted scene: {currentName}");
+            StartOrRenderScene();
+        }
     }
 }

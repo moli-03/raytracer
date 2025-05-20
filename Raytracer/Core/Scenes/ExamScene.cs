@@ -13,6 +13,8 @@ public class ExamScene : BaseScene
     
     public override string Name => "Exam Scene";
 
+    public override bool Animated => false;
+    
     public override void Initialize(Scene scene)
     {
         Console.WriteLine("Initializing Exam Scene");
@@ -31,7 +33,7 @@ public class ExamScene : BaseScene
     private void RenderText(Scene scene)
     {
         var text = ObjLoader.LoadFromFile(Path.Combine(AssetsDirectory, "ExamText.obj"));
-        text.transform.position = new Vector3(-9f, 2.5f, 2.75f);
+        text.transform.position = new Vector3(-9f, 2.5f, 2.5f);
         text.transform.Scale = new Vector3(1.5f, 1.5f, 1.5f);
         text.transform.rotation = Quaternion.FromAxisAngle(Vector3.UnitY, -(float)System.Math.PI / 2f);
         
@@ -40,8 +42,8 @@ public class ExamScene : BaseScene
 
     private void SetupBall(Scene scene)
     {
-    var ball = new Sphere(2.5f);
-        ball.transform.position = new Vector3(-6f, 3f, 6f);
+        var ball = new Sphere(2.5f);
+        ball.transform.position = new Vector3(-5.5f, 3.5f, 5.5f);
         ball.material = MaterialLibrary.Glass;
         scene.AddObject(ball);
     }
