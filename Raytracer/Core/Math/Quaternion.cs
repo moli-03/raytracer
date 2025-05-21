@@ -109,6 +109,18 @@ public struct Quaternion
             cr * cp * cy + sr * sp * sy
         );
     }
+    
+    // Rotate a vector by this quaternion
+    public Vector3 Rotate(Vector3 v)
+    {
+        // This is equivalent to the quaternion multiplication: q * v * q^-1
+        // But implemented more efficiently
+        Vector3 qv = new Vector3(X, Y, Z);
+        Vector3 uv = Vector3.Cross(qv, v);
+        Vector3 uuv = Vector3.Cross(qv, uv);
+        
+        return v + ((uv * W) + uuv) * 2;
+    }
 
     // Convert quaternion to Euler angles (radians)
     public Vector3 ToEulerAngles()

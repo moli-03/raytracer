@@ -56,6 +56,9 @@ public class RayTracingApplication {
         this.sceneManager.RegisterScene(new DefaultScene());
         this.sceneManager.RegisterScene(new SpheresScene());
         this.sceneManager.RegisterScene(new MinimalScene());
+        this.sceneManager.RegisterScene(new BounceScene());
+        this.sceneManager.RegisterScene(new OrbitingScene());
+        this.sceneManager.RegisterScene(new RotatingCubesScene());
         // Set the first scene as active
         this.sceneManager.SetActiveScene(this.sceneManager.GetAvailableScenes().First());
     
@@ -397,6 +400,22 @@ public class RayTracingApplication {
             else if (key == Key.D3)
             {
                 SwitchSceneByIndex(2);
+            }
+            else if (key == Key.D4)
+            {
+                SwitchSceneByIndex(3);
+            }
+            else if (key == Key.D5)
+            {
+                SwitchSceneByIndex(4);
+            }
+            else if (key == Key.D6)
+            {
+                SwitchSceneByIndex(5);
+            }
+            else if (key == Key.D7)
+            {
+                SwitchSceneByIndex(6);
             }
             else if (key == Key.Space)
             {
