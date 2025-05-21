@@ -36,7 +36,7 @@ public class SpheresScene : BaseScene
         scene.AddObject(floor);
         
         // Create a grid of spheres
-        CreateSphereGrid(scene, 7, 7);
+        CreateSphereGrid(scene, 5, 5);
         
         Console.WriteLine($"Scene initialized with {scene.Objects.Count} objects and {scene.Lights.Count} lights");
     }

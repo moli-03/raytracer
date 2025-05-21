@@ -80,7 +80,7 @@ public class OrbitingScene : BaseScene
         };
         
         // Create planets at different distances from the sun
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 4; i++)
         {
             // Calculate initial position on orbit
             float orbitRadius = 6.0f + i * 3.0f;

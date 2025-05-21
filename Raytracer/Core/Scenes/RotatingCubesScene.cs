@@ -19,7 +19,7 @@ public class RotatingCubesScene : BaseScene
         Console.WriteLine($"Initializing {Name}...");
         
         // Setup camera with elevated position
-        SetupCamera(scene, new Vector3(0, 12, -15), new Vector3(0, -0.4f, 1));
+        SetupCamera(scene, new Vector3(0, 7, 1), new Vector3(0, -0.8f, 1));
         
         // Add lights
         Light mainLight = new Light(new Color(1.0f, 0.98f, 0.95f));
@@ -46,11 +46,11 @@ public class RotatingCubesScene : BaseScene
     {
         // Camera slowly moves in figure-8 pattern
         float cameraTime = frameCount * 0.01f;
-        float cameraX = (float)System.Math.Sin(cameraTime) * 15.0f;
-        float cameraZ = (float)System.Math.Sin(cameraTime * 2) * 5.0f - 15.0f;
+        float cameraX = (float)System.Math.Sin(cameraTime) * 4.0f;
+        float cameraZ = (float)System.Math.Sin(cameraTime * 2) * 2.0f;
         
-        scene.camera.Position = new Vector3(cameraX, 12, cameraZ);
-        scene.camera.LookDirection = new Vector3(0, 0, 10) - scene.camera.Position;
+        // scene.camera.Position = new Vector3(cameraX, 7, cameraZ);
+        // scene.camera.LookDirection = new Vector3(0, 0, 10) - scene.camera.Position;
         
         // Animate cube rotations
         AnimateCubes(frameCount);
@@ -69,9 +69,9 @@ public class RotatingCubesScene : BaseScene
         };
         
         // Create a spiral pattern of cubes
-        int numCubes = 30;
-        float spiralRadius = 0.5f;
-        float spiralHeight = 0.2f;
+        int numCubes = 7;
+        float spiralRadius = 3f;
+        float spiralHeight = 4f;
         
         for (int i = 0; i < numCubes; i++)
         {
@@ -97,7 +97,7 @@ public class RotatingCubesScene : BaseScene
                 (float)System.Math.Sin(i * 0.5f)
             ).Normalized;
             
-            float rotSpeed = 0.5f + (i % 5) * 0.2f;
+            float rotSpeed = 2f + (i % 5) *6f;
             
             // Store the cube and its animation parameters
             cubes.Add(cube);
